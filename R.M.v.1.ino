@@ -117,7 +117,9 @@ void interrupt()// Interrupt function
 
 }
 
-for flag_A = encoderVal*0; flag_A < encoderVal*2048; flag_A++) { 
+void MachineStop(){
+if (flag_A == encoderVal*2048)  {
 digitalWrite(relayPin, HIGH);
-delay(1000);  
+delay(1000); 
+}
 }
