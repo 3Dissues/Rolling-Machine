@@ -2,7 +2,7 @@
 #include <LiquidCrystal_I2C.h>
 
 //  LCD
-LiquidCrystal_I2C lcd(0x27,16,2);  //  LCD 
+LiquidCrystal_I2C lcd(0x27,16,2);  
 
 // Rotary Encoder Control
 const int clk= 2; 
@@ -26,7 +26,7 @@ const int relay = 7;// Connected to relay (LED)
 
 void setup() {
  
- //Serial.begin(9600);   
+ Serial.begin(9600);   
  lcd.begin();  // initialize the lcd
   lcd.backlight();
   lcd.print("Hello world");
@@ -39,9 +39,6 @@ void setup() {
   pinMode(sw, INPUT_PULLUP);
   pinMode(relay, OUTPUT);
   digitalWrite(relay, LOW);// 
- 
- // ENCODER MEASURE 
-
   pinMode(A_channel, INPUT_PULLUP);
   pinMode(B_channel, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt( A_channel), interrupt, RISING); 
@@ -51,9 +48,8 @@ void loop()
 {  int change = getEncoderTurn();
   encoderVal = encoderVal + change;
 
-  val = digitalRead(sw);// read the push button value
-
-  if(val == HIGH && MotorON == LOW){
+  val = digitalRead(sw);
+    if(val == HIGH && MotorON == LOW){
 
     pushed = 1-pushed;
     delay(100);
@@ -81,15 +77,13 @@ void loop()
   delay(100);
 }
 
-
-
 int getEncoderTurn(void)
 {
   static int oldA = HIGH; //set the oldA as HIGH
   static int oldB = HIGH; //set the oldB as HIGH
   int result = 0;
-  int newA = digitalRead(dt);//read the value of clkPin to newA
-  int newB = digitalRead(clk);//read the value of dtPin to newB
+  int newA = digitalRead(dt);//read the value of clk to newA
+  int newB = digitalRead(clk);//read the value of dt to newB
   if (newA != oldA || newB != oldB) //if the value of clkPin or the dtPin has changed
   {
     // something has changed
@@ -103,19 +97,17 @@ int getEncoderTurn(void)
   return result;
 }
 
-void interrupt()// Interrupt function
+void interrupt()
 { char i;
   i = digitalRead( B_channel);
   if (i == 1)
-    flag_A += 1;
+    channel_A += 1;
   else
-    flag_B += 1;
+    channel_B += 1;
 
-}
-
-void MachineStop(){
 if (channel_A == encoderVal*2048)  {
 digitalWrite(relay, HIGH);
 delay(1000); 
 }
 }
+
