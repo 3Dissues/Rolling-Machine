@@ -115,6 +115,7 @@ void interrupt()// Interrupt function
 while  (channel_Z == encoderVal*2)  {
 digitalWrite(relayPin, LOW);
 delay(1000); 
+ break;
 }
 
 }
