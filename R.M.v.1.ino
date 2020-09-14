@@ -1,55 +1,63 @@
+ 
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD 
 
-//  LCD
-LiquidCrystal_I2C lcd(0x27,16,2);  
+//address to 0x27 for a 16 chars and 2 line display
 
 // Rotary Encoder Control
-const int clk= 2; 
-const int dt= 3; 
-const int sw= 4 ;
-   int encoderVal = 0;
 
-// RELAY
-const int relay = 7;// Connected to relay (LED)
-   int val = 0; // push value from pin 4
-   int MotorON = 0;//light status
-   int pushed = 0;//push status
+const int clkPin= 4; //the clk attach to pin2
+
+const int dtPin= 5; //the dt attach to pin3
+
+const int swPin= 6 ;//the number of the button
+
+int encoderVal = 0;
+
+const int relayPin = 8;// Connected to relay (LED)
+int val = 0; // push value from pin 4
+int MotorON = 0;//light status
+int pushed = 0;//push status
 
 // Rotary Encoder Measure
 
-#define  A_channel 9
-#define  B_channel 10
-   unsigned int channel_A = 0;  //Assign a value 
-   unsigned int channel_B = 0;  //Assign a value 
+#define  Z_CHANNEL 2
+unsigned int channel_Z = 0;  //Assign a value to the token bit
+
 
 
 void setup() {
- 
- Serial.begin(9600);   
- lcd.begin();  // initialize the lcd
+//Serial.begin(9600); // initialize serial communications at 9600 bps  
+ lcd.init();  // initialize the lcd
+  // Print a message to the LCD.
   lcd.backlight();
-  lcd.print("Hello world");
+  lcd.print("DOORNBOS EQUIP.");
   delay(2000);
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("Set Value :");
-  pinMode(clk, INPUT);
-  pinMode(dt, INPUT);
-  pinMode(sw, INPUT_PULLUP);
-  pinMode(relay, OUTPUT);
-  digitalWrite(relay, LOW);// 
-  pinMode(A_channel, INPUT_PULLUP);
-  pinMode(B_channel, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt( A_channel), interrupt, RISING); 
+  lcd.print("Set Length :");
+  //set clkPin,dePin,swPin as INPUT
+  pinMode(clkPin, INPUT);
+  pinMode(dtPin, INPUT);
+  pinMode(swPin, INPUT_PULLUP);
+  pinMode(relayPin, OUTPUT);
+  digitalWrite(relayPin, LOW);// keep the load OFF at the begining. If you wanted to be ON, change the HIGH to LOW
+
+ // ENCODER MEASURE 
+
+  pinMode(Z_CHANNEL, INPUT_PULLUP);
+  
+  attachInterrupt(digitalPinToInterrupt( Z_CHANNEL), interrupt, RISING); //Interrupt trigger mode: RISING
 }
 
 void loop() 
 {  int change = getEncoderTurn();
   encoderVal = encoderVal + change;
 
-  val = digitalRead(sw);
-    if(val == HIGH && MotorON == LOW){
+  val = digitalRead(swPin);// read the push button value
+
+  if(val == HIGH && MotorON == LOW){
 
     pushed = 1-pushed;
     delay(100);
@@ -58,7 +66,7 @@ void loop()
   MotorON = val;
 
       if(pushed == HIGH){
-        digitalWrite(relay, LOW); 
+        digitalWrite(relayPin, LOW); 
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print("Set Length :");
@@ -68,7 +76,7 @@ void loop()
   }
        
       else{
-        digitalWrite(relay, HIGH);
+        digitalWrite(relayPin, HIGH);
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print("MOTOR ON :");
@@ -77,13 +85,15 @@ void loop()
   delay(100);
 }
 
+
+
 int getEncoderTurn(void)
 {
   static int oldA = HIGH; //set the oldA as HIGH
   static int oldB = HIGH; //set the oldB as HIGH
   int result = 0;
-  int newA = digitalRead(dt);//read the value of clk to newA
-  int newB = digitalRead(clk);//read the value of dt to newB
+  int newA = digitalRead(dtPin);//read the value of clkPin to newA
+  int newB = digitalRead(clkPin);//read the value of dtPin to newB
   if (newA != oldA || newB != oldB) //if the value of clkPin or the dtPin has changed
   {
     // something has changed
@@ -97,17 +107,14 @@ int getEncoderTurn(void)
   return result;
 }
 
-void interrupt()
+void interrupt()// Interrupt function
 { char i;
-  i = digitalRead( B_channel);
+  i = digitalRead( Z_CHANNEL);
   if (i == 1)
-    channel_A += 1;
-  else
-    channel_B += 1;
-
-if (channel_A == encoderVal*2048)  {
-digitalWrite(relay, HIGH);
+    channel_Z += 1;
+while  (channel_Z == encoderVal*2)  {
+digitalWrite(relayPin, LOW);
 delay(1000); 
 }
-}
 
+}
