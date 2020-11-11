@@ -2,27 +2,26 @@
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD //address to 0x27 for a 16 chars and 2 line display
 
-// Rotary Encoder Control
+//ENCODER KY-040
 
 const int clkPin= 4; //the clk attach to pin2
-
 const int dtPin= 5; //the dt attach to pin3
-
 const int swPin= 6 ;//the number of the button
 
-int encoderVal = 0;
+
+// RELAY SWITCH
 
 const int relayPin = 8;// Connected to relay (LED)
 int val = 0; // push value from pin 4
 int MotorON = 0;//light status
 int pushed = 0;//push status
 
-// Rotary Encoder Measure
+//EN500 ENCODER
 
 #define  Z_CHANNEL 2
 unsigned int channel_Z = 0;  //Assign a value to the token bit
 
-
+int encoderVal = 0;
 void setup()
 {
  
@@ -35,7 +34,7 @@ void setup()
 
      //EN500 ENCODER  
   pinMode(Z_CHANNEL, OUTPUT);
-  attachInterrupt(digitalPinToInterrupt( Z_CHANNEL), interrupt, CHANGE); //Interrupt trigger mode: RISING
+  attachInterrupt(digitalPinToInterrupt(Z_CHANNEL), interrupt, CHANGE); //Interrupt trigger mode: RISING
  
  //Serial.begin(9600); // initialize serial communications at 9600 bps  
   lcd.begin();  // initialize the lcd
@@ -121,9 +120,10 @@ int getEncoderTurn(void)
 }
 
 void interrupt()// Interrupt function
-{ char i;
-  i = digitalRead( Z_CHANNEL);
-  if (i == 1)
+{ 
+ int i = 0;
+  i = digitalRead(Z_CHANNEL);
+  if (i == 0)
     channel_Z += 1;
 
 }
