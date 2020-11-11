@@ -28,16 +28,7 @@ unsigned int channel_Z = 0;  //Assign a value to the token bit
 
 
 void setup() {
-//Serial.begin(9600); // initialize serial communications at 9600 bps  
- lcd.init();  // initialize the lcd
-  // Print a message to the LCD.
-  lcd.backlight();
-  lcd.print("DOORNBOS EQUIP.");
-  delay(2000);
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("Set Length :");
-  //set clkPin,dePin,swPin as INPUT
+//set clkPin,dePin,swPin as INPUT
   pinMode(clkPin, INPUT);
   pinMode(dtPin, INPUT);
   pinMode(swPin, INPUT_PULLUP);
@@ -46,9 +37,20 @@ void setup() {
 
  // ENCODER MEASURE 
 
-  pinMode(Z_CHANNEL, INPUT_PULLUP);
+  pinMode(Z_CHANNEL, OUTPUT);
   
-  attachInterrupt(digitalPinToInterrupt( Z_CHANNEL), interrupt, RISING); //Interrupt trigger mode: RISING
+  attachInterrupt(digitalPinToInterrupt( Z_CHANNEL), interrupt, CHANGE); //Interrupt trigger mode: RISING
+ 
+ //Serial.begin(9600); // initialize serial communications at 9600 bps  
+ lcd.begin();  // initialize the lcd
+  // Print a message to the LCD.
+  lcd.backlight();
+  lcd.print("DOORNBOS EQUIP.");
+  delay(2000);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Set Length :");
+  //set clkPin,dePin,swPin as INPUT
 }
 
 void loop() 
@@ -70,7 +72,7 @@ void loop()
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print("Set Length :");
-        Serial.println(encoderVal); //print the encoderVal on the serial monitor
+       // Serial.println(encoderVal); //print the encoderVal on the serial monitor
         lcd.setCursor(5,1);
         lcd.print(encoderVal);    
   }
