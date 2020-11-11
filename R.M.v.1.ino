@@ -1,9 +1,6 @@
- 
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
-LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD 
-
-//address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD //address to 0x27 for a 16 chars and 2 line display
 
 // Rotary Encoder Control
 
@@ -26,48 +23,49 @@ int pushed = 0;//push status
 unsigned int channel_Z = 0;  //Assign a value to the token bit
 
 
-
-void setup() {
-//set clkPin,dePin,swPin as INPUT
+void setup()
+{
+ 
+    //ENCODER KY-040
   pinMode(clkPin, INPUT);
   pinMode(dtPin, INPUT);
   pinMode(swPin, INPUT_PULLUP);
   pinMode(relayPin, OUTPUT);
-  digitalWrite(relayPin, LOW);// keep the load OFF at the begining. If you wanted to be ON, change the HIGH to LOW
+  digitalWrite(relayPin, LOW);
 
- // ENCODER MEASURE 
-
+     //EN500 ENCODER  
   pinMode(Z_CHANNEL, OUTPUT);
-  
   attachInterrupt(digitalPinToInterrupt( Z_CHANNEL), interrupt, CHANGE); //Interrupt trigger mode: RISING
  
  //Serial.begin(9600); // initialize serial communications at 9600 bps  
- lcd.begin();  // initialize the lcd
-  // Print a message to the LCD.
+  lcd.begin();  // initialize the lcd
   lcd.backlight();
   lcd.print("DOORNBOS EQUIP.");
   delay(2000);
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Set Length :");
-  //set clkPin,dePin,swPin as INPUT
+  
 }
 
+
 void loop() 
-{  int change = getEncoderTurn();
-  encoderVal = encoderVal + change;
+{  
+   int change = getEncoderTurn();
+    encoderVal = encoderVal + change;
 
-  val = digitalRead(swPin);// read the push button value
+     val = digitalRead(swPin);// read the push button value
 
-  if(val == HIGH && MotorON == LOW){
-
+  if(val == HIGH && MotorON == LOW)
+  {
     pushed = 1-pushed;
     delay(100);
   }    
 
-  MotorON = val;
+     MotorON = val;
 
-      if(pushed == HIGH){
+      if(pushed == HIGH)
+      {
         digitalWrite(relayPin, LOW); 
         lcd.clear();
         lcd.setCursor(0,0);
@@ -75,15 +73,28 @@ void loop()
        // Serial.println(encoderVal); //print the encoderVal on the serial monitor
         lcd.setCursor(5,1);
         lcd.print(encoderVal);    
-  }
-       
-      else{
+      }
+      
+ else
+      {
         digitalWrite(relayPin, HIGH);
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print("MOTOR ON :");
       }     
-
+    
+ if  (channel_Z == encoderVal*2)  
+      {
+        digitalWrite(relayPin, LOW); 
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Set Length :");
+       // Serial.println(encoderVal); //print the encoderVal on the serial monitor
+        lcd.setCursor(5,1);
+        lcd.print(encoderVal);    
+      }
+       
+       
   delay(100);
 }
 
@@ -114,10 +125,7 @@ void interrupt()// Interrupt function
   i = digitalRead( Z_CHANNEL);
   if (i == 1)
     channel_Z += 1;
-while  (channel_Z == encoderVal*2)  {
-digitalWrite(relayPin, LOW);
-delay(1000); 
- break;
-}
 
 }
+
+
