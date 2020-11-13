@@ -63,36 +63,28 @@ void loop()
 
      MotorON = val;
 
-      if(pushed == HIGH)
+      if(pushed == LOW)
       {
-        digitalWrite(relayPin, LOW); 
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("Set Length :");
-       // Serial.println(encoderVal); //print the encoderVal on the serial monitor
-        lcd.setCursor(5,1);
-        lcd.print(encoderVal);    
-      }
-      
- else
-      {
-        digitalWrite(relayPin, HIGH);
+        digitalWrite(relayPin, HIGH); 
         lcd.clear();
         lcd.setCursor(0,0);
         lcd.print("MOTOR ON :");
-      }     
-    
- if  (channel_Z == encoderVal*2)  
-      {
-        digitalWrite(relayPin, LOW); 
-        lcd.clear();
-        lcd.setCursor(0,0);
         lcd.print("Set Length :");
        // Serial.println(encoderVal); //print the encoderVal on the serial monitor
         lcd.setCursor(5,1);
-        lcd.print(encoderVal);    
-      }
-       
+        lcd.print(encoderVal)
+       ]
+         
+      if (channel_Z == encoderVal*2);
+        {
+           digitalWrite(relayPin, LOW);
+           delay(400);
+           lcd.clear();
+           lcd.setCursor(0,0);
+           lcd.print("MOTOR OFF :");
+   
+        }
+
        
   delay(100);
 }
